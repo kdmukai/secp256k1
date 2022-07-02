@@ -41,6 +41,20 @@
  *  Two tables of this size are used (due to the endomorphism
  *  optimization).
  */
+
+/**
+ * libsecp256k1-config.h copied from:
+ * https://github.com/diybitcoinhardware/secp256k1-embedded/blob/master/src/libsecp256k1-config.h
+ * 
+ * Autogen normally creates the file for us but it's unclear if those values are appropriate for
+ * the target ESP32 board.
+ * 
+ * Include it here to define ECMULT_WINDOW_SIZE to solve CMake compiler problems.
+ */
+#  if !defined(ECMULT_WINDOW_SIZE)
+#    include "libsecp256k1-config.h"
+#  endif
+
 #  define WINDOW_G ECMULT_WINDOW_SIZE
 #endif
 
