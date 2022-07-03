@@ -37,4 +37,33 @@
 #define HAVE_STDLIB_H 1
 #define HAVE_STRING_H 1
 
+#define USE_EXTERNAL_DEFAULT_CALLBACKS
+
+// malloc and free in micropython
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "py/mpconfig.h"
+#include "py/misc.h"
+#include "py/mpstate.h"
+
+#if MICROPY_ENABLE_GC
+#include "py/gc.h"
+
+// We redirect standard alloc functions to GC heap - just for the rest of
+// this module. In the rest of MicroPython source, system malloc can be
+// freely accessed - for interfacing with system and 3rd-party libs for
+// example. On the other hand, some (e.g. bare-metal) ports may use GC
+// heap as system heap, so, to avoid warnings, we do undef's first.
+#undef malloc
+#undef free
+#undef realloc
+#define malloc(b) gc_alloc((b), false)
+#define malloc_with_finaliser(b) gc_alloc((b), true)
+#define free gc_free
+#define realloc(ptr, n) gc_realloc(ptr, n, true)
+#define realloc_ext(ptr, n, mv) gc_realloc(ptr, n, mv)
+#endif
+
 #endif /* SECP256K1_CONFIG_H */
